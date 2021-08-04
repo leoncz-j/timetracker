@@ -1,39 +1,50 @@
-from helpers import read, write, append, last_has_timestamp
+from timestamp.helpers import read, write, append, last_has_timestamp, check_file
 import argparse
 from datetime import date
-from Timestamp import Timestamp, Activity
+from timestamp.Timestamp import Timestamp, Activity
 import sys
 
+### config.ini anlegen, prüfen und verwenden
 DEFAULT_PATH = '/home/leon/Dokumente/Zeiterfassung-' + date.today().strftime('%m-%y') + '.csv'
 
 
-def stop(description=None):
-    table = read(DEFAULT_PATH)
-    if last_has_timestamp(table):
-        new_activity = Activity(Timestamp(description))
-        append(new_activity, DEFAULT_PATH)
-        print('Stopp-Zeitstempel bereits vorhanden. Neuer Zeitstempel wurde angelegt')
+def yes_no():
+    inp = input()
+    if inp not in ['y', 'n']:
+        sys.exit()
+    return inp
 
-    else:
+
+def stop(file, description=None):
+    table = read(file)
+    if bool(len(table)) and last_has_timestamp(table):
+        new_activity = Activity(Timestamp(description))
+        append(new_activity, file)
+        print('Stopp-Zeitstempel bereits vorhanden. Neuer Zeitstempel wurde angelegt!')
+
+    elif bool(len(table)):
         activity = Activity.from_row(table[-1])
         activity.add_stop_timestamp(Timestamp(description if description is not None else ' '))
         table[-1] = activity.to_row()
-        write(table, DEFAULT_PATH)
+        write(table, file)
 
-
-def start(description):
-    table = read(DEFAULT_PATH)
-    if last_has_timestamp(table) is False:
-        print('Letzter Zeitstempel hat keinen Stopp Zeitstempel. Trotzdem neuen Eintrag anlegen? (y/n)')
-        inp = input()
-        if inp not in ['y', 'n']:
-            sys.exit()
-        if inp == 'y':
-            new_activity = Activity(Timestamp(description))
-            append(new_activity, DEFAULT_PATH)
     else:
         new_activity = Activity(Timestamp(description))
-        append(new_activity, DEFAULT_PATH)
+        append(new_activity, file)
+        print('In dieser Datei wurde noch kein Zeitstempel gefunden. Neuer Zeitstempel wurde angelegt!')
+
+
+def start(file, description):
+    table = read(file)
+    if bool(len(table)) and last_has_timestamp(table) is False:
+        print('Letzter Zeitstempel hat keinen Stopp Zeitstempel. Trotzdem neuen Eintrag anlegen? (y/n)')
+        inp = yes_no()
+        if inp == 'y':
+            new_activity = Activity(Timestamp(description))
+            append(new_activity, file)
+    else:
+        new_activity = Activity(Timestamp(description))
+        append(new_activity, file)
 
 
 def zeitstempel():
@@ -44,7 +55,16 @@ def zeitstempel():
                         help='Description of the activity')
     args = parser.parse_args()
     description = args.Activity
-    start(description)
+    file = DEFAULT_PATH
+
+    if not check_file(file):
+        print('Die Datei existiert nicht! Soll sie angelegt werden? (y/n)')
+        inp = yes_no()
+        if inp == 'n':
+            sys.exit()
+        write([], file)
+
+    start(file, description)
 
 
 def zeitstempel_stopp():
@@ -57,7 +77,16 @@ def zeitstempel_stopp():
                         help='Description of the activity')
     args = parser.parse_args()
     description = args.Activity
-    stop(description)
+    file = DEFAULT_PATH
+
+    if not check_file(file):
+        print('Die Datei existiert nicht! Soll sie angelegt werden? (y/n)')
+        inp = yes_no()
+        if inp == 'n':
+            sys.exit()
+        write([], file)
+
+    stop(file, description)
 
 
 if __name__ == '__main__':

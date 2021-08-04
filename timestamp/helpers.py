@@ -1,6 +1,14 @@
 import csv
 
 
+def check_file(file):
+    try:
+        read(file)
+        return True
+    except FileNotFoundError:
+        return False
+
+
 
 def append(activity, file):
     """Expects an object of type activity."""
