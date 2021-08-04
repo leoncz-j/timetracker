@@ -1,7 +1,7 @@
-from timestamp.helpers import read, write, append, last_has_timestamp
+from helpers import read, write, append, last_has_timestamp
 import argparse
 from datetime import date
-from timestamp.Timestamp import Timestamp, Activity
+from Timestamp import Timestamp, Activity
 import sys
 
 DEFAULT_PATH = '/home/leon/Dokumente/Zeiterfassung-' + date.today().strftime('%m-%y') + '.csv'

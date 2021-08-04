@@ -16,6 +16,12 @@ class Timestamp:
         return 'Timestamp (%s, %s, %s)' % (
             self.date.strftime('%d.%m.%y'), self.time.strftime('%H:%M'), "Tätigkeit: " + self.description)
 
+    def __iter__(self):
+        return (i for i in (self.description, self.time, self.date))
+
+    def __eq__(self, other):
+        return tuple(self) == tuple(other)
+
 
 class Activity:
 
@@ -26,6 +32,12 @@ class Activity:
 
     def __str__(self):
         return 'Activity: (From %s, Until %s)' % (self.timestamp_start, self.timestamp_stop)
+
+    def __iter__(self):
+        return (i for i in (self.timestamp_start, self.timestamp_stop, self.description))
+
+    def __eq__(self, other):
+        return tuple(self) == tuple(other)
 
     @classmethod
     def from_row(cls, row):
