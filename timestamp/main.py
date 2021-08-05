@@ -1,5 +1,5 @@
 from timestamp.helpers import read, write, append_timestamp, insert_stop_timestamp, last_has_timestamp, check_file, \
-    parse_args, yes_no
+    yes_no
 import argparse
 from datetime import date
 from timestamp.Timestamp import Timestamp
@@ -9,7 +9,38 @@ import sys
 DEFAULT_PATH = '/home/leon/Dokumente/Zeiterfassung-' + date.today().strftime('%m-%y') + '.csv'
 
 
+def parse_args(args=None):
+    parser = argparse.ArgumentParser(description='Zeitstempel in eine CSV Datei schreiben')
+
+    subparsers = parser.add_subparsers(help='Zur Auswahl stehen start, stop, config, read oder delete.', dest='option',
+                                       required=True)
+    parser_start = subparsers.add_parser('start', help='Ein neuer Start-Zeitstempel wird in die CSV Datei geschrieben.')
+    parser_start.add_argument('Activity',
+                              metavar='activity',
+                              type=str,
+                              help='Beschreibung der Aktivität.')
+    parser_start.set_defaults(func=start_wrapper)
+
+    parser_stop = subparsers.add_parser('stop',
+                                        help='Ein Stopp-Zeitstempel wird zur letzten Aktivität hinzugefügt. Zusätzliche Beschreibung optional.')
+    parser_stop.add_argument('Activity',
+                             metavar='activity',
+                             type=str,
+                             nargs="?",
+                             help='Beschreibung der Aktivität.')
+    parser_stop.set_defaults(func=stop_wrapper)
+
+    return parser.parse_args(args)
+
+
 def stop(file, timestamp):
+    if not check_file(file):
+        print('Die Datei existiert nicht! Soll sie angelegt werden? (y/n)')
+        inp = yes_no()
+        if inp == 'n':
+            sys.exit()
+        write([], file)
+
     table = read(file)
     if bool(len(table)) and last_has_timestamp(table):
         append_timestamp(file, timestamp)
@@ -23,7 +54,7 @@ def stop(file, timestamp):
         print('In dieser Datei wurde noch kein Zeitstempel gefunden. Neuer Zeitstempel wurde angelegt!')
 
 
-def stempel_checks_start(file):
+def start(file, timestamp):
     if not check_file(file):
         print('Die Datei existiert nicht! Soll sie angelegt werden? (y/n)')
         inp = yes_no()
@@ -37,33 +68,25 @@ def stempel_checks_start(file):
         inp = yes_no()
         if inp == 'n':
             sys.exit()
-
-
-
-def zeitstempel():
-    file = DEFAULT_PATH
-    args = parse_args()
-    description = args.Activity
-    timestamp = Timestamp(description)
-    stempel_checks_start(file)
     append_timestamp(file, timestamp)
 
 
-def zeitstempel_stopp():
+def start_wrapper(args):
     file = DEFAULT_PATH
-    args = parse_args(optional=True)
-    description = args.Activity
-    timestamp = Timestamp(description)
+    timestamp = Timestamp(args.Activity)
+    start(file, timestamp)
 
-    if not check_file(file):
-        print('Die Datei existiert nicht! Soll sie angelegt werden? (y/n)')
-        inp = yes_no()
-        if inp == 'n':
-            sys.exit()
-        write([], file)
 
+def stop_wrapper(args):
+    file = DEFAULT_PATH
+    timestamp = Timestamp(args.Activity)
     stop(file, timestamp)
 
 
+def main():
+    args = parse_args()
+    args.func(args)
+
+
 if __name__ == '__main__':
-    zeitstempel()
+    main()

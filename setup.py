@@ -8,5 +8,5 @@ setup(
     install_requires=[
         'importlib; python_version == "3.8.10"',
     ],
-    scripts=['bin/stempel', 'bin/stempelstopp']
+    scripts=['bin/stempel']
 )

@@ -1,5 +1,5 @@
 #!/usr/bin python3
 
-from timestamp import main
+from timestamp.main import main
 
-main.zeitstempel()
+main()

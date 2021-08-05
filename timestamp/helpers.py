@@ -57,19 +57,3 @@ def insert_stop_timestamp(table, file, timestamp):
     table[-1] = activity.to_row()
     write(table, file)
 
-
-def parse_args(args=None, optional=False):
-    parser = argparse.ArgumentParser(description='Zeitstempel in eine CSV Datei schreiben')
-    if optional is False:
-        parser.add_argument('Activity',
-                            metavar='activity',
-                            type=str,
-                            help='Description of the activity')
-    else:
-        parser.add_argument('Activity',
-                            metavar='activity',
-                            type=str,
-                            nargs="?",
-                            default=' ',
-                            help='Description of the activity')
-    return parser.parse_args(args)
