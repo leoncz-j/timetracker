@@ -66,4 +66,7 @@ class Activity:
                     "Tätigkeit: " + description]
 
     def add_stop_timestamp(self, timestamp):
-        self.timestamp_stop = timestamp
+        if self.timestamp_start.date < timestamp.date:
+            self.timestamp_stop = Timestamp(timestamp.description,self.timestamp_start.datetime.replace(hour=23, minute=59))
+        else:
+            self.timestamp_stop = timestamp

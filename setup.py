@@ -6,7 +6,7 @@ setup(
     py_modules=['timestamp'],
     packages=['timestamp'],
     install_requires=[
-        'importlib; python_version == "3.8.10"',
+        'importlib; python_version == "3.8.10"', 'pytest'
     ],
     scripts=['bin/stempel']
 )
