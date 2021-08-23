@@ -15,6 +15,6 @@ def test_last_has_timestamp():
 
 
 def test_check_file():
-    assert check_file('/test.csv') is False
+    assert check_file('/tests/data/doesnotexist.csv') is False
     assert check_file(os.getcwd() + '/tests/data/testfile.csv')
 
