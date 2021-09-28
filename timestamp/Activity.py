@@ -1,5 +1,7 @@
-from datetime import datetime
-
+from datetime import datetime, date
+from os.path import expanduser
+import configparser
+import timestamp.helpers as helpers
 
 class Timestamp:
 
@@ -67,6 +69,58 @@ class Activity:
 
     def add_stop_timestamp(self, timestamp):
         if self.timestamp_start.date < timestamp.date:
-            self.timestamp_stop = Timestamp(timestamp.description,self.timestamp_start.datetime.replace(hour=23, minute=59))
+            self.timestamp_stop = Timestamp(timestamp.description,
+                                            self.timestamp_start.datetime.replace(hour=23, minute=59))
         else:
             self.timestamp_stop = timestamp
+
+
+class Config:
+    DEFAULT_PATH = 'config.ini'
+
+    def __init__(self, file=DEFAULT_PATH):
+        """If there is a file, config will be loaded from the file, else the initiated config object will use Default values"""
+        self.config_data = configparser.ConfigParser()
+
+        if self.check_file(file):
+            self.config_file = file
+        else:
+            self.reset()
+            self.config_file = self.DEFAULT_PATH
+
+    def reset(self, datestamp=None):
+        """Resets the config.ini file to default values """
+        if datestamp is not None:
+            self.config_data['Default File'] = {
+                'file': self.get_file_path(datestamp)}
+        else:
+            self.config_data['Default File'] = {
+                'file': self.get_file_path()}
+
+    def path_to_config(self, file):
+        self.config_data['Default File'] = {
+            'file': file}
+
+    def write(self):
+        with open(self.config_file, 'w') as configfile:
+            self.config_data.write(configfile)
+
+    def get_path_from_config(self):
+        if not self.config_data['Default File']['file']:
+            self.config_data.read(self.config_file)
+        return self.config_data['Default File']['file']
+
+    @staticmethod
+    def get_home_path():
+        return expanduser("~")
+
+    def get_file_path(self, datestamp=date.today().strftime('%m-%y')):
+        return self.get_home_path() + '/Zeiterfassung-' + datestamp + '.csv'
+
+    @staticmethod
+    def check_file(file):
+        try:
+            helpers.read(file)
+            return True
+        except FileNotFoundError:
+            return False

@@ -1,6 +1,7 @@
 import csv
 import sys
-from timestamp.Timestamp import Activity
+
+from timestamp.Activity import Activity
 
 
 def check_file(file):
@@ -55,4 +56,3 @@ def insert_stop_timestamp(rows, file, timestamp):
     activity.add_stop_timestamp(timestamp)  # if description is not None else ' '))
     rows[-1] = activity.to_row()
     write(rows, file)
-

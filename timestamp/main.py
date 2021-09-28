@@ -3,7 +3,7 @@ from timestamp.helpers import read, write, append_timestamp, insert_stop_timesta
 import argparse
 
 from datetime import date
-from timestamp.Timestamp import Timestamp
+from timestamp.Activity import Timestamp
 import sys
 
 ### config.ini anlegen, prüfen und verwenden
