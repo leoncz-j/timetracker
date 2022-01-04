@@ -5,9 +5,11 @@ import argparse
 from datetime import date
 from timestamp.Activity import Timestamp
 import sys
+import os
 
 ### config.ini anlegen, prüfen und verwenden
-DEFAULT_PATH = '/home/leon/Dokumente/Zeiterfassung-' + date.today().strftime('%m-%y') + '.csv'
+
+DEFAULT_PATH = os.path.expanduser("~") + '/Zeiten/Zeiterfassung-' + date.today().strftime('%m-%y') + '.csv'
 
 
 def parse_args(args=None):

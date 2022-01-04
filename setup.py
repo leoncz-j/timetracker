@@ -8,5 +8,11 @@ setup(
     install_requires=[
         'importlib; python_version == "3.8.10"', 'pytest'
     ],
-    scripts=['bin/stempel']
+    entry_points={
+        "console_scripts": [
+            "timestamp = timestamp.main:main"
+        ]
+    },
+
+    #scripts=['bin/stempel']
 )
